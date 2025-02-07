@@ -13,25 +13,6 @@ A comprehensive study tool to help prepare for the GRE vocabulary section using 
   - Synonyms
 - Converts raw word lists into structured JSON data format
 
-### Study Mode
-- Interactive study sessions with customizable number of words
-- Smart word selection algorithm that prioritizes:
-  - Less frequently reviewed words (75% of selection)
-  - Random selection for variety (25% of selection)
-- For each word, displays:
-  - Dictionary definition
-  - Simplified "plain English" definition  
-  - Multiple example sentences
-- Saves study history with timestamps
-- Tracks review counts per word
-
-### Quiz Mode
-- Test your knowledge with interactive quizzes
-- Tracks accuracy statistics:
-  - Total quiz attempts
-  - Correct answers
-- Uses spaced repetition principles
-
 ### Memory System
 - Maintains persistent progress tracking
 - Records for each word:
