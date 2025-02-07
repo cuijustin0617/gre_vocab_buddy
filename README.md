@@ -30,10 +30,9 @@ The study mode implements an intelligent word selection algorithm to optimize le
 - **Selection Algorithm**:
   - 75% of words are chosen based on least-reviewed status
   - 25% are randomly selected to maintain variety
-  - Words not seen in the last 24 hours are prioritized
 
 - **Study Session Flow**:
-  1. Choose number of words to study (default: 10)
+  1. Choose number of words to study 
   2. For each word:
      - View dictionary and simplified definitions
      - See multiple example sentences
@@ -43,20 +42,5 @@ The study mode implements an intelligent word selection algorithm to optimize le
 ### Quiz Mode (quiz.py)
 The quiz system uses spaced repetition principles to reinforce learning:
 
-- **Quiz Types**:
-  - Definition matching
-  - Synonym selection
-  - Context-based word usage
-
-- **Spaced Repetition**:
-  - Words are scheduled for review based on performance
-  - Correct answers increase interval before next review
-  - Incorrect answers decrease interval
-  - Uses a modified SuperMemo-2 algorithm
-
-- **Performance Tracking**:
-  - Accuracy rate per word
-  - Overall quiz statistics
-  - Learning progress visualization
 
 
