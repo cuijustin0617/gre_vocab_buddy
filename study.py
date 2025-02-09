@@ -3,6 +3,10 @@ import json
 import random
 from datetime import datetime
 import os
+from gtts import gTTS
+from io import BytesIO
+from pygame import mixer
+import time
 
 def load_memory():
     # Create data directory if it doesn't exist
@@ -36,11 +40,22 @@ def get_study_set(num_words):
                 "total_quiz": 0
             }
     
-    # Sort by review count and accuracy
-    sorted_words = sorted(words, key=lambda x: (
-        memory[x]["review_count"],
-        -memory[x]["total_quiz"]
-    ))
+    # Group words by review count
+    review_groups = {}
+    for word in words:
+        review_count = memory[word]["review_count"]
+        if review_count not in review_groups:
+            review_groups[review_count] = []
+        review_groups[review_count].append(word)
+    
+    # Shuffle words within each review count group
+    for group in review_groups.values():
+        random.shuffle(group)
+    
+    # Reconstruct sorted list with shuffled groups
+    sorted_words = []
+    for count in sorted(review_groups.keys()):
+        sorted_words.extend(review_groups[count])
     
     # Select 75% least reviewed, 25% random
     split = int(0.75 * num_words)
@@ -50,6 +65,32 @@ def get_study_set(num_words):
     
     save_memory(memory)
     return study_words
+
+def play_pronunciation(word):
+    """Play the pronunciation of a word using Google TTS"""
+    try:
+        # Initialize mixer
+        mixer.init()
+        
+        # Create a BytesIO object to store the audio file
+        fp = BytesIO()
+        tts = gTTS(text=word, lang='en')
+        tts.write_to_fp(fp)
+        fp.seek(0)
+        
+        # Play the pronunciation
+        mixer.music.load(fp)
+        mixer.music.play()
+        
+        # Wait for audio to finish
+        while mixer.music.get_busy():
+            time.sleep(0.1)
+            
+        # Clean up
+        mixer.quit()
+        
+    except Exception as e:
+        print(f"Could not play pronunciation: {e}")
 
 def run_study():
     num_words = int(input("How many words to study today? "))
@@ -64,7 +105,6 @@ def run_study():
     os.makedirs("study_history", exist_ok=True)
     output_file = f"study_history/study_list_{timestamp}.txt"
     
-    
     try:
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(f"Study List Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
@@ -73,6 +113,7 @@ def run_study():
                 data = word_data[word]
                 # Write to console
                 print(f"\nWord: {word}")
+                play_pronunciation(word)
                 print(f"Definition: {data['def_dict']}")
                 print(f"Definition Simple: {data['def_simple']}")
                 print("Examples:")
@@ -88,7 +129,12 @@ def run_study():
                     f.write(f"- {ex}\n")
                 f.write("\n")
                 
-                input("\nPress Enter to continue...")
+                while True:
+                    user_input = input("\nPress Enter to continue, or 'r' to replay pronunciation... ")
+                    if user_input.lower() == 'r':
+                        play_pronunciation(word)
+                    elif user_input == '':
+                        break
             
             # Only update review counts if entire list was completed
             for word in study_words:
